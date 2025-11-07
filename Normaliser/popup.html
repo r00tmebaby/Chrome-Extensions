@@ -1,41 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Audio Normalizer & EQ</title>
     <style>
-      body { font-family: Arial, sans-serif; width: 600px; padding: 10px; background: #fafafa; }
-      h4 { margin: 8px 0 4px; }
-      input[type="range"] { width: 100%; }
-      .row { display: flex; align-items: center; gap: 6px; }
-      #gainLabel { width: 50px; text-align: right; }
-      .small { font-size: 11px; color: #555; }
-      .eq-band { display: flex; flex-direction: column; align-items:center; min-width: 20px; text-align: center; }
-      .eq-wrapper { display: grid; gap: 6px; }
-      .vertical { writing-mode: bt-lr; -webkit-appearance: slider-vertical; appearance: slider-vertical; height: 110px; width: 18px; }
-      .controls { display:flex; flex-wrap: wrap; gap:6px; margin:6px 0; align-items:center; }
-      select, .btn { font-size: 11px; }
+      body { font-family: Arial, sans-serif; width: 380px; padding: 10px; background:#fafafa; }
+      h4 { margin:8px 0 4px; }
+      input[type=range] { width:100%; }
+      .row { display:flex; align-items:center; gap:6px; }
+      #gainLabel { width:50px; text-align:right; }
+      .small { font-size:11px; color:#555; }
+      .eq-wrapper { display:grid; gap:6px; grid-template-columns: repeat(10,1fr); }
+      .eq-band { display:flex; flex-direction:column; align-items:center; }
+      .vertical { writing-mode: bt-lr; -webkit-appearance: slider-vertical; appearance: slider-vertical; height:110px; width:18px; }
+      .controls { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0; align-items:center; }
+      select, .btn { font-size:11px; }
       .btn { padding:2px 6px; }
-      ul { list-style: none; padding-left: 0; max-height: 80px; overflow-y: auto; }
-      ul li { display: flex; justify-content: space-between; align-items: center; font-size: 11px; background:#fff; padding:2px 4px; margin:2px 0; border:1px solid #ddd; border-radius:3px; }
-      button { cursor: pointer; }
-      .toggle-row { display:flex; align-items:center; gap:8px; margin-top:4px; }
-      /* Single horizontal meter */
-      .meter { height: 10px; background: #333; margin-top: 4px; position: relative; border-radius: 3px; overflow: hidden; }
-      .meter-bar { position: absolute; top:0; left:0; height:100%; background: linear-gradient(90deg,#3cb371,#f0ad4e,#d9534f); width:0%; transition: width 0.08s linear; }
+      .toggle-row { display:flex; gap:8px; align-items:center; }
+      ul { list-style:none; padding-left:0; max-height:80px; overflow-y:auto; }
+      ul li { display:flex; justify-content:space-between; align-items:center; font-size:11px; background:#fff; padding:2px 4px; margin:2px 0; border:1px solid #ddd; border-radius:3px; }
+      .meter { height:12px; background:#222; position:relative; border-radius:4px; overflow:hidden; margin-top:4px; }
+      .meter-bar { position:absolute; top:0; left:0; height:100%; width:0%; background:linear-gradient(90deg,#3cb371,#f0ad4e,#d9534f); transition:width 0.07s linear; }
+      footer { margin-top:10px; font-size:12px; }
+      footer a { color:#0066cc; text-decoration:none; }
     </style>
   </head>
   <body>
     <div class="toggle-row">
       <label><input type="checkbox" id="enabledToggle" /> Enabled</label>
-      <label><input type="checkbox" id="applyAllToggle" /> Apply to all sites</label>
+      <label><input type="checkbox" id="applyAllToggle" /> Apply all sites</label>
     </div>
     <h4>Volume Boost</h4>
     <div class="row">
       <input type="range" id="gain" min="0.5" max="3" step="0.1" value="1.5" />
       <label id="gainLabel">1.5x</label>
     </div>
-    <div class="small">Gain multiplier after normalization.</div>
+    <div class="small">Post-processing gain (headroom auto-managed).</div>
 
     <h4>Equalizer</h4>
     <div class="controls">
@@ -55,24 +55,22 @@
       </select>
       <button id="savePresetBtn" class="btn">Save</button>
       <button id="deletePresetBtn" class="btn">Delete</button>
-      <label class="small">Bands <select id="eqModeSelect"><option value="10">10</option><option value="15">15</option><option value="31">31</option></select></label>
-      <label class="small">Design <select id="designSelect"><option value="bars">Bars</option><option value="dots">Dots</option></select></label>
     </div>
-    <div class="eq-wrapper" id="eqWrapper"></div>
-    <div class="small">Parametric EQ (±12 dB), vertical sliders.</div>
+    <div id="eqWrapper" class="eq-wrapper"></div>
+    <div class="small">Vertical parametric EQ (±12 dB) with automatic headroom compensation.</div>
 
-    <h4>Audio Meter</h4>
+    <h4>Peak Meter</h4>
     <div class="meter"><div id="meterBar" class="meter-bar"></div></div>
-    <div id="meterValue" class="small">Peak: 0.00 dB</div>
+    <div id="meterValue" class="small">Peak: -60.00 dB</div>
 
     <h4>Site Allowlist</h4>
     <div class="row">
       <input type="text" id="siteInput" placeholder="example.com" style="flex:1" />
-      <button id="addSiteBtn">Add</button>
+      <button id="addSiteBtn" class="btn">Add</button>
     </div>
     <ul id="siteList"></ul>
 
-    <p class="small">When not applying to all sites, audio chain only activates on allowlisted domains.</p>
+    <footer>Author: r00tmebaby · <a href="https://github.com/r00tmebaby/Chrome-Extensions/tree/master/Normaliser" target="_blank" rel="noopener noreferrer">GitHub</a></footer>
 
     <script src="popup.js"></script>
   </body>

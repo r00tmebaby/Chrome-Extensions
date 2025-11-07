@@ -23,10 +23,11 @@
     eqBands: Array(10).fill(0),
     smoothing: 0.5,
     active: false,
-    lastPeakDb: -60,
     nodes: null,
     audioCtx: null,
     mediaEl: null,
+    lastMaxPos: 0,
+    lastPeakDb: -60,
   };
 
   function hostMatchesAllowlist(hostname, list) {
@@ -79,7 +80,6 @@
       disconnectNode(state.nodes.source);
     } catch {}
     try { state.audioCtx && state.audioCtx.close && state.audioCtx.close(); } catch {}
-    if (state.meterInterval) { try { clearInterval(state.meterInterval); } catch {} state.meterInterval = null; }
     state.nodes = null;
     state.audioCtx = null;
     state.active = false;
@@ -92,7 +92,6 @@
     attachCtxStateHandler(audioCtx);
     const source = audioCtx.createMediaElementSource(mediaEl);
 
-    // Compressor
     const comp = audioCtx.createDynamicsCompressor();
     comp.threshold.value = -24;
     comp.knee.value = 30;
@@ -100,56 +99,82 @@
     comp.attack.value = 0.003;
     comp.release.value = 0.25;
 
-    // Equalizer: peaking filters per band
+    const preAnalyser = audioCtx.createAnalyser();
+    preAnalyser.fftSize = 1024;
+    preAnalyser.smoothingTimeConstant = state.smoothing;
+
+    const compAnalyser = audioCtx.createAnalyser();
+    compAnalyser.fftSize = 1024;
+    compAnalyser.smoothingTimeConstant = state.smoothing;
+
+    const postAnalyser = audioCtx.createAnalyser();
+    postAnalyser.fftSize = 1024;
+    postAnalyser.smoothingTimeConstant = state.smoothing;
+
     const filters = state.eqFreqs.map((freq) => {
       const f = audioCtx.createBiquadFilter();
       f.type = "peaking";
       f.frequency.value = freq;
-      f.Q.value = 1.0; // moderate bandwidth
+      f.Q.value = 0.9; // slightly broader for smoother response
       f.gain.value = 0;
       return f;
     });
 
-    // Gain
     const gain = audioCtx.createGain();
     gain.gain.value = state.gainValue;
 
-    // Analyzer
-    const analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 1024;
-    analyser.smoothingTimeConstant = state.smoothing;
+    // Output limiter to catch clipping after EQ+gain
+    const limiter = audioCtx.createDynamicsCompressor();
+    limiter.threshold.value = -2;
+    limiter.knee.value = 0;
+    limiter.ratio.value = 20;
+    limiter.attack.value = 0.001;
+    limiter.release.value = 0.1;
 
-    // Connect: source -> comp -> filters -> gain -> analyser -> destination
     try {
+      source.connect(preAnalyser);
+      source.connect(comp);
+      comp.connect(compAnalyser);
       let prev = comp;
-      source.connect(prev);
-      filters.forEach((f) => { prev.connect(f); prev = f; });
+      filters.forEach(f => { prev.connect(f); prev = f; });
       prev.connect(gain);
-      gain.connect(analyser);
-      analyser.connect(audioCtx.destination);
+      gain.connect(limiter);
+      limiter.connect(postAnalyser);
+      postAnalyser.connect(audioCtx.destination);
     } catch (e) {
       try { audioCtx.close(); } catch {}
       return null;
     }
 
-    return { audioCtx, source, comp, filters, gain, analyser };
+    return { audioCtx, source, comp, filters, gain, limiter, preAnalyser, compAnalyser, postAnalyser, analyser: postAnalyser };
   }
 
   function applyEqGains(filters, gains) {
-    if (!filters) return;
+    if (!filters) return 0;
     const ctx = state.audioCtx || (state.nodes && state.nodes.audioCtx) || null;
+    let maxPos = 0;
     for (let i = 0; i < filters.length && i < gains.length; i++) {
-      const target = Math.max(-12, Math.min(12, Number(gains[i]) || 0));
+      // Clamp to ±12 but track positive boosts for headroom
+      let g = Number(gains[i]) || 0;
+      if (g > 12) g = 12; if (g < -12) g = -12;
+      if (g > maxPos) maxPos = g;
       if (ctx && typeof filters[i].gain.setTargetAtTime === 'function') {
-        try {
-          filters[i].gain.setTargetAtTime(target, ctx.currentTime, 0.02);
-        } catch {
-          filters[i].gain.value = target;
-        }
-      } else {
-        filters[i].gain.value = target;
-      }
+        try { filters[i].gain.setTargetAtTime(g, ctx.currentTime, 0.02); } catch { filters[i].gain.value = g; }
+      } else { filters[i].gain.value = g; }
     }
+    state.lastMaxPos = maxPos;
+    return maxPos;
+  }
+
+  function effectiveGainWithHeadroom() {
+    // Reduce output gain as positive EQ boosts increase to avoid distortion
+    const headroomFactor = 1 + (state.lastMaxPos / 12) * 0.5; // up to 1.5x reduction at +12dB
+    return state.gainValue / headroomFactor;
+  }
+
+  function updateOutputGain() {
+    if (!state.nodes) return;
+    state.nodes.gain.gain.value = state.enabled ? effectiveGainWithHeadroom() : 1;
   }
 
   function setEnabledOnNodes(enabled) {
@@ -161,7 +186,7 @@
       state.nodes.comp.attack.value = 0.003;
       state.nodes.comp.release.value = 0.25;
       applyEqGains(state.nodes.filters, state.eqBands);
-      state.nodes.gain.gain.value = state.gainValue;
+      updateOutputGain();
     } else {
       state.nodes.comp.threshold.value = 0;
       state.nodes.comp.knee.value = 0;
@@ -183,27 +208,25 @@
     if (!state.nodes) return;
     state.audioCtx = state.nodes.audioCtx;
 
-    // Initialize params
     applyEqGains(state.nodes.filters, state.eqBands);
     state.nodes.gain.gain.value = state.gainValue;
     setEnabledOnNodes(state.enabled);
     resumeIfSuspended();
 
-    // Meter loop (peak)
-    const buf = new Uint8Array(state.nodes.analyser.fftSize);
-    if (state.meterInterval) { try { clearInterval(state.meterInterval); } catch {} }
-    state.meterInterval = setInterval(() => {
-      if (!state.nodes) return;
-      try { state.nodes.analyser.getByteTimeDomainData(buf); } catch { rebuildChain(); return; }
+    // Single meter loop (post analyser peak) for reliability
+    const buf = new Uint8Array(state.nodes.postAnalyser.fftSize);
+    function meterLoop() {
+      if (!state.nodes || !state.nodes.postAnalyser) return;
+      try { state.nodes.postAnalyser.getByteTimeDomainData(buf); } catch { rebuildChain(); return; }
       let peak = 0;
-      for (let i = 0; i < buf.length; i++) {
-        const v = (buf[i] - 128) / 128;
-        const a = Math.abs(v);
-        if (a > peak) peak = a;
+      for (let i=0;i<buf.length;i++) {
+        const v = (buf[i]-128)/128; const a = Math.abs(v); if (a>peak) peak=a;
       }
-      const db = peak > 0 ? 20 * Math.log10(peak) : -Infinity;
+      const db = peak>0?20*Math.log10(Math.max(peak,1e-6)):-60;
       state.lastPeakDb = Math.max(-60, Math.min(0, db));
-    }, 200);
+      requestAnimationFrame(meterLoop);
+    }
+    requestAnimationFrame(meterLoop);
 
     state.active = true;
   }
@@ -320,10 +343,10 @@
       if (msg && msg.type === "setGain") {
         state.gainValue = Number(msg.value) || 1;
         if (state.nodes) {
-          state.nodes.gain.gain.value = state.enabled ? state.gainValue : 1;
+          updateOutputGain();
           resumeIfSuspended();
         }
-        sendResponse({ ok: true });
+        sendResponse({ ok: true, applied: effectiveGainWithHeadroom() });
         return true;
       }
       if (msg && msg.type === "setEq") {
@@ -333,6 +356,7 @@
         state.eqBands = normalized;
         if (state.nodes && state.enabled) {
           applyEqGains(state.nodes.filters, normalized);
+          updateOutputGain();
           resumeIfSuspended();
         }
         sendResponse({ ok: true });
@@ -377,6 +401,7 @@
         sendResponse({ ok: true });
         return true;
       }
+      if (msg && msg.type === "resumeCtx") { resumeIfSuspended(); sendResponse({ok:true}); return true; }
     } catch (e) {
       // ignore
     }
@@ -408,12 +433,12 @@
     }
     if (changes.gainValue) {
       state.gainValue = changes.gainValue.newValue;
-      if (state.nodes && state.enabled) state.nodes.gain.gain.value = state.gainValue;
+      if (state.nodes && state.enabled) updateOutputGain();
     }
     if (changes.eqBands) {
       const size = state.eqFreqs.length;
       state.eqBands = (changes.eqBands.newValue || state.eqBands).slice(0, size);
-      if (state.nodes && state.enabled) applyEqGains(state.nodes.filters, state.eqBands);
+      if (state.nodes && state.enabled) { applyEqGains(state.nodes.filters, state.eqBands); updateOutputGain(); }
     }
     if (changes.eqMode) {
       const m = Number(changes.eqMode.newValue);

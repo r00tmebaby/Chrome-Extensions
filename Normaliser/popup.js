@@ -1,3 +1,4 @@
+// Simplified popup.js for Normaliser folder
 const slider = document.getElementById("gain");
 const label = document.getElementById("gainLabel");
 const enabledToggle = document.getElementById("enabledToggle");
@@ -9,8 +10,14 @@ const siteList = document.getElementById("siteList");
 const presetSelect = document.getElementById('presetSelect');
 const savePresetBtn = document.getElementById('savePresetBtn');
 const deletePresetBtn = document.getElementById('deletePresetBtn');
-const eqModeSelect = document.getElementById('eqModeSelect');
-const designSelect = document.getElementById('designSelect');
+const refreshModeSel = document.getElementById('refreshMode');
+const rawBar = document.getElementById('rawBar');
+const rawValue = document.getElementById('rawValue');
+const postBar = document.getElementById('postBar');
+const postValue = document.getElementById('postValue');
+const grLabel = document.getElementById('grLabel');
+const meterBar = document.getElementById('meterBar');
+const meterValue = document.getElementById('meterValue');
 
 const DEFAULTS = {
   enabled: true,
@@ -21,56 +28,22 @@ const DEFAULTS = {
   eqFreqs: [30, 60, 120, 240, 480, 960, 1920, 3840, 7680, 15360],
 };
 
-let spectrumDesign = 'bars';
-let spectrumScaleFactor = 1.0;
 let customPresets = {};
 const lastPresetKey = 'lastPresetSelection';
 
-function getActiveTab() {
-  return chrome.tabs.query({ active: true, currentWindow: true }).then((tabs) => tabs[0]);
-}
-
-function saveSync(obj) {
-  return chrome.storage.sync.set(obj);
-}
+function getActiveTab() { return chrome.tabs.query({ active: true, currentWindow: true }).then((tabs) => tabs[0]); }
+function saveSync(obj) { return chrome.storage.sync.set(obj); }
 
 let eqUpdateTimer = null;
-let currentEqMode = 10;
-let currentFreqLabels = DEFAULTS.eqFreqs.map(f=>f+'Hz');
-const bandMeter = document.getElementById('bandMeter');
-const bandLabels = document.getElementById('bandLabels');
-
-function buildBandMeter(count){
-  bandMeter.innerHTML='';
-  bandLabels.innerHTML='';
-  bandMeter.style.gridTemplateColumns = `repeat(${count},1fr)`;
-  bandLabels.style.gridTemplateColumns = `repeat(${count},1fr)`;
-  for (let i=0;i<count;i++){ const b=document.createElement('div'); b.className='band-bar'; bandMeter.appendChild(b); }
-  currentFreqLabels.slice(0,count).forEach(l=>{ const d=document.createElement('div'); d.textContent=l; d.style.textAlign='center'; bandLabels.appendChild(d); });
-}
-
 async function queueEqUpdate() {
   if (eqUpdateTimer) clearTimeout(eqUpdateTimer);
   eqUpdateTimer = setTimeout(async () => {
     const values = [...eqWrapper.querySelectorAll('input.vertical')].map(el=>parseInt(el.value,10)||0);
-    const normalized = Array(currentEqMode).fill(0).map((_,i)=>Number(values[i])||0);
+    const normalized = Array(values.length).fill(0).map((_,i)=>Number(values[i])||0);
     await chrome.storage.local.set({ eqBands: normalized });
     const tab = await getActiveTab();
     if (tab && tab.id) chrome.tabs.sendMessage(tab.id, { type: "setEq", bands: normalized });
   }, 120);
-}
-
-function loadCustomPresets() {
-  return chrome.storage.sync.get({ customPresets: {}, spectrumScale: 1, spectrumDesign: 'bars', eqMode: 10, smoothing: 0.5 }).then(data => {
-    customPresets = data.customPresets || {};
-    spectrumScaleFactor = Number(data.spectrumScale) || 1;
-    spectrumDesign = data.spectrumDesign || 'bars';
-    designSelect.value = spectrumDesign;
-    spectrumScale.value = String(spectrumScaleFactor);
-    eqModeSelect.value = String(data.eqMode || 10);
-    smoothingSlider.value = String(data.smoothing || 0.5);
-    refreshPresetOptions();
-  });
 }
 
 function refreshPresetOptions() {
@@ -89,6 +62,12 @@ function refreshPresetOptions() {
   if ([...presetSelect.options].some(o => o.value === current)) presetSelect.value = current;
 }
 
+function pattern(base, size){
+  const out = Array(size).fill(0);
+  for (let i=0;i<size;i++) out[i] = base[i]!==undefined?base[i]:base[base.length-1];
+  return out;
+}
+
 function applyPresetSelection(value) {
   if (!value) return;
   chrome.storage.sync.set({ [lastPresetKey]: value });
@@ -100,18 +79,19 @@ function applyPresetSelection(value) {
     return;
   }
   if (value === 'custom') return;
+  const size = eqWrapper.querySelectorAll('input.vertical').length || 10;
   const PRESETS = {
-    flat: Array(currentEqMode).fill(0),
-    rock:   pattern([4,3,2,0,-2,-1,1,3,4,5]),
-    pop:    pattern([0,2,3,3,1,-1,-1,1,2,2]),
-    jazz:   pattern([2,3,2,1,0,1,2,3,2,1]),
-    rap:    pattern([5,4,3,1,-1,-1,1,3,4,5]),
-    house:  pattern([3,4,2,0,-1,0,2,3,4,3]),
-    bass:   pattern([6,5,3,1,0,0,0,-1,-2,-3]),
-    treble: pattern([-3,-2,-1,0,0,0,1,2,3,4]),
-    vocal:  pattern([-2,0,2,3,3,2,1,0,0,-1]),
-    classical: pattern([0,0,0,1,2,2,1,0,0,0]),
-    dance:  pattern([3,3,2,1,0,1,2,3,4,4]),
+    flat: Array(size).fill(0),
+    rock:   pattern([4,3,2,0,-2,-1,1,3,4,5], size),
+    pop:    pattern([0,2,3,3,1,-1,-1,1,2,2], size),
+    jazz:   pattern([2,3,2,1,0,1,2,3,2,1], size),
+    rap:    pattern([5,4,3,1,-1,-1,1,3,4,5], size),
+    house:  pattern([3,4,2,0,-1,0,2,3,4,3], size),
+    bass:   pattern([6,5,3,1,0,0,0,-1,-2,-3], size),
+    treble: pattern([-3,-2,-1,0,0,0,1,2,3,4], size),
+    vocal:  pattern([-2,0,2,3,3,2,1,0,0,-1], size),
+    classical: pattern([0,0,0,1,2,2,1,0,0,0], size),
+    dance:  pattern([3,3,2,1,0,1,2,3,4,4], size),
   };
   const key = value === 'reset' ? 'flat' : value;
   const gains = PRESETS[key] || PRESETS.flat;
@@ -119,22 +99,15 @@ function applyPresetSelection(value) {
   queueEqUpdate();
 }
 
-function pattern(base){
-  // If mode > base length, extend by repeating last; if smaller, slice.
-  const out = Array(currentEqMode).fill(0);
-  for (let i=0;i<currentEqMode;i++) out[i] = base[i]!==undefined?base[i]:base[base.length-1];
-  return out;
-}
-
 function renderEq(bands) {
   eqWrapper.innerHTML = '';
-  eqWrapper.style.gridTemplateColumns = `repeat(${currentEqMode},1fr)`;
-  const size = currentEqMode;
-  const used = Array.isArray(bands) ? bands.slice(0, size) : Array(size).fill(0);
+  const size = Array.isArray(bands) ? bands.length : 10;
+  eqWrapper.style.gridTemplateColumns = `repeat(${size},1fr)`;
+  const used = Array.isArray(bands) ? bands : Array(size).fill(0);
   for (let i=0;i<size;i++) {
     const val = used[i]||0;
     const col = document.createElement('div'); col.className = 'eq-band';
-    const labelDiv = document.createElement('div'); labelDiv.className='small'; labelDiv.textContent = currentFreqLabels[i]||`B${i+1}`;
+    const labelDiv = document.createElement('div'); labelDiv.className='small'; labelDiv.textContent = DEFAULTS.eqFreqs[i] ? `${DEFAULTS.eqFreqs[i]}Hz` : `B${i+1}`;
     const input = document.createElement('input'); input.type='range'; input.min='-12'; input.max='12'; input.step='1'; input.value=String(val); input.className='vertical';
     const valDiv = document.createElement('div'); valDiv.className='small'; valDiv.textContent = `${val} dB`;
     input.addEventListener('input', () => { valDiv.textContent = `${parseInt(input.value,10)} dB`; queueEqUpdate(); });
@@ -162,9 +135,7 @@ function renderAllowlist(list) {
   });
 }
 
-function extractHost(url) {
-  try { return new URL(url).hostname; } catch { return ""; }
-}
+function extractHost(url) { try { return new URL(url).hostname; } catch { return ""; } }
 
 async function init() {
   const data = await chrome.storage.sync.get(DEFAULTS);
@@ -175,7 +146,6 @@ async function init() {
   renderEq(data.eqBands);
   renderAllowlist(Array.isArray(data.allowlist) ? data.allowlist : []);
 
-  // handlers
   slider.addEventListener("input", async (e) => {
     const value = parseFloat(e.target.value);
     label.textContent = `${value.toFixed(1)}x`;
@@ -212,61 +182,19 @@ async function init() {
     if (tab && tab.id) chrome.tabs.sendMessage(tab.id, { type: "updateAllowlist", allowlist: newer });
   });
 
-  // Seed allowlist with current site if user wants
   const tab = await getActiveTab();
   const host = extractHost(tab?.url || "");
   siteInput.placeholder = host || "example.com";
 
-  // Init augment
-  await loadCustomPresets();
+  // Load custom presets
+  const presetData = await chrome.storage.sync.get({ customPresets: {} });
+  customPresets = presetData.customPresets || {};
+  refreshPresetOptions();
 }
 
 init().catch(() => {});
 
-async function initAugment(){
-  const data = await chrome.storage.sync.get({ eqMode:10, eqBands:Array(10).fill(0) });
-  currentEqMode = data.eqMode || 10;
-  buildBandMeter(currentEqMode);
-  renderEq(data.eqBands);
-  pollSpectrum();
-}
-initAugment().catch(()=>{});
-
-async function pollSpectrum() {
-  const tab = await getActiveTab();
-  if (!tab || !tab.id) return setTimeout(pollSpectrum,150);
-  chrome.tabs.sendMessage(tab.id, { type:'getSpectrum' }, (res) => {
-    if (chrome.runtime.lastError) return setTimeout(pollSpectrum,150);
-    if (res && Array.isArray(res.bands)) {
-      currentFreqLabels = res.labels || currentFreqLabels;
-      const src = res.bands;
-      const mapped = mapBands(src, currentEqMode);
-      updateBandMeter(mapped);
-    }
-    setTimeout(pollSpectrum,100);
-  });
-}
-
-// On init restore last preset selection
-async function restoreLastPreset(){
-  const data = await chrome.storage.sync.get({ [lastPresetKey]: 'custom' });
-  const preset = data[lastPresetKey];
-  if (preset && presetSelect) {
-    presetSelect.value = preset;
-    applyPresetSelection(preset);
-  }
-}
-
-eqModeSelect?.addEventListener('change', async (e) => {
-  currentEqMode = parseInt(e.target.value,10)||10;
-  await chrome.storage.sync.set({ eqMode: currentEqMode });
-  const tab = await getActiveTab();
-  if (tab && tab.id) chrome.tabs.sendMessage(tab.id, { type: 'setEqMode', mode: currentEqMode });
-  // Rebuild UI placeholders until spectrum labels arrive
-  buildBandMeter(currentEqMode);
-  renderEq(Array(currentEqMode).fill(0));
-});
-
+// Presets
 presetSelect?.addEventListener('change', (e)=>applyPresetSelection(e.target.value));
 savePresetBtn?.addEventListener('click', async () => {
   const name = prompt('Preset name (2-20 chars)');
@@ -288,31 +216,31 @@ deletePresetBtn?.addEventListener('click', async () => {
   presetSelect.value='custom';
 });
 
-designSelect?.addEventListener('change', async (e)=>{
-  spectrumDesign = e.target.value; await chrome.storage.sync.set({ spectrumDesign });
-});
+// Restore last preset on open
+(async function restoreLastPreset(){
+  const data = await chrome.storage.sync.get({ [lastPresetKey]: 'custom' });
+  const preset = data[lastPresetKey];
+  if (preset && presetSelect) { presetSelect.value = preset; applyPresetSelection(preset); }
+})();
 
-// Restore last preset on init
-restoreLastPreset().catch(()=>{});
-
-function updateMeterUI(db) {
-  const norm = Math.max(0, Math.min(1, 1 + db / 60));
-  const pct = Math.round(norm * 100);
-  const meterBar = document.getElementById('meterBar');
-  const meterValue = document.getElementById('meterValue');
-  if (meterBar) meterBar.style.width = pct + '%';
-  if (meterValue) meterValue.textContent = 'Peak: ' + db.toFixed(2) + ' dB';
+// Meter polling
+function updateMeterUI(db){
+  const norm = Math.max(0, Math.min(1, 1 + db/60));
+  meterBar.style.width = Math.round(norm*100)+'%';
+  meterValue.textContent = 'Peak: ' + db.toFixed(2) + ' dB';
 }
 
-async function pollMeter() {
+async function pollMeter(){
   const tab = await getActiveTab();
-  if (!tab || !tab.id) return setTimeout(pollMeter, 300);
-  chrome.tabs.sendMessage(tab.id, { type: 'getMeter' }, (res) => {
-    if (!chrome.runtime.lastError && res && typeof res.peakDb === 'number') {
-      updateMeterUI(res.peakDb);
-    }
+  if (!tab || !tab.id) return setTimeout(pollMeter, 250);
+  chrome.tabs.sendMessage(tab.id, { type:'getMeter' }, (res) => {
+    if (!chrome.runtime.lastError && res && typeof res.peakDb === 'number') updateMeterUI(res.peakDb);
     setTimeout(pollMeter, 150);
   });
 }
-// Start meter polling after init
-init().then(() => pollMeter()).catch(() => pollMeter());
+
+pollMeter().catch(()=>{});
+
+(async function initRefresh(){ const data = await chrome.storage.sync.get({ refreshMode:'fast' }); const v=data.refreshMode; meterDelay = v==='eco'?300:100; if (refreshModeSel) refreshModeSel.value=v; })();
+refreshModeSel?.addEventListener('change', async (e)=>{ const v=e.target.value; meterDelay = v==='eco'?300:100; await chrome.storage.sync.set({ refreshMode:v }); });
+
