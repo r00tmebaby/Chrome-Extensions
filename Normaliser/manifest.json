@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Audio Normalizer & EQ",
+  "version": "1.1",
+  "description": "Normalize, boost, and equalize audio on any site, with per-site controls.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

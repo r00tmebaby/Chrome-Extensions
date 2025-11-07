@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Audio Normalizer & EQ</title>
+    <style>
+      body { font-family: Arial, sans-serif; width: 600px; padding: 10px; background: #fafafa; }
+      h4 { margin: 8px 0 4px; }
+      input[type="range"] { width: 100%; }
+      .row { display: flex; align-items: center; gap: 6px; }
+      #gainLabel { width: 50px; text-align: right; }
+      .small { font-size: 11px; color: #555; }
+      .eq-band { display: flex; flex-direction: column; align-items:center; min-width: 20px; text-align: center; }
+      .eq-wrapper { display: grid; gap: 6px; }
+      .vertical { writing-mode: bt-lr; -webkit-appearance: slider-vertical; appearance: slider-vertical; height: 110px; width: 18px; }
+      .controls { display:flex; flex-wrap: wrap; gap:6px; margin:6px 0; align-items:center; }
+      select, .btn { font-size: 11px; }
+      .btn { padding:2px 6px; }
+      ul { list-style: none; padding-left: 0; max-height: 80px; overflow-y: auto; }
+      ul li { display: flex; justify-content: space-between; align-items: center; font-size: 11px; background:#fff; padding:2px 4px; margin:2px 0; border:1px solid #ddd; border-radius:3px; }
+      button { cursor: pointer; }
+      .toggle-row { display:flex; align-items:center; gap:8px; margin-top:4px; }
+      /* Single horizontal meter */
+      .meter { height: 10px; background: #333; margin-top: 4px; position: relative; border-radius: 3px; overflow: hidden; }
+      .meter-bar { position: absolute; top:0; left:0; height:100%; background: linear-gradient(90deg,#3cb371,#f0ad4e,#d9534f); width:0%; transition: width 0.08s linear; }
+    </style>
+  </head>
+  <body>
+    <div class="toggle-row">
+      <label><input type="checkbox" id="enabledToggle" /> Enabled</label>
+      <label><input type="checkbox" id="applyAllToggle" /> Apply to all sites</label>
+    </div>
+    <h4>Volume Boost</h4>
+    <div class="row">
+      <input type="range" id="gain" min="0.5" max="3" step="0.1" value="1.5" />
+      <label id="gainLabel">1.5x</label>
+    </div>
+    <div class="small">Gain multiplier after normalization.</div>
+
+    <h4>Equalizer</h4>
+    <div class="controls">
+      <select id="presetSelect">
+        <option value="custom">Preset: Custom</option>
+        <option value="reset">Preset: Flat</option>
+        <option value="rock">Rock</option>
+        <option value="pop">Pop</option>
+        <option value="jazz">Jazz</option>
+        <option value="rap">Rap</option>
+        <option value="house">House</option>
+        <option value="bass">Bass Boost</option>
+        <option value="treble">Treble Boost</option>
+        <option value="vocal">Vocal</option>
+        <option value="classical">Classical</option>
+        <option value="dance">Dance</option>
+      </select>
+      <button id="savePresetBtn" class="btn">Save</button>
+      <button id="deletePresetBtn" class="btn">Delete</button>
+      <label class="small">Bands <select id="eqModeSelect"><option value="10">10</option><option value="15">15</option><option value="31">31</option></select></label>
+      <label class="small">Design <select id="designSelect"><option value="bars">Bars</option><option value="dots">Dots</option></select></label>
+    </div>
+    <div class="eq-wrapper" id="eqWrapper"></div>
+    <div class="small">Parametric EQ (±12 dB), vertical sliders.</div>
+
+    <h4>Audio Meter</h4>
+    <div class="meter"><div id="meterBar" class="meter-bar"></div></div>
+    <div id="meterValue" class="small">Peak: 0.00 dB</div>
+
+    <h4>Site Allowlist</h4>
+    <div class="row">
+      <input type="text" id="siteInput" placeholder="example.com" style="flex:1" />
+      <button id="addSiteBtn">Add</button>
+    </div>
+    <ul id="siteList"></ul>
+
+    <p class="small">When not applying to all sites, audio chain only activates on allowlisted domains.</p>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
