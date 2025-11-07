@@ -4,8 +4,7 @@ This repository hosts multiple Chrome extensions created by **r00tmebaby**. Each
 
 ## Current Extensions
 
-- **Normaliser**: Real‑time audio normalizer with vertical parametric EQ and automatic headroom + peak meter.
-- (Add future extensions here) Keep each in its own subfolder with a manifest.
+- **Normaliser**: Real‑time audio normalizer with vertical parametric EQ and a single peak meter. It now uses `activeTab` + `scripting` to inject code only when you open the popup (no broad host permissions).
 
 ## Folder Structure (example)
 
@@ -32,33 +31,29 @@ Youtubenormaliser/
 2. Open Chrome and navigate to: `chrome://extensions/` (Menu → More tools → Extensions).
 3. Enable **Developer mode** (toggle in the top-right corner).
 4. Click **Load unpacked** and select the extension folder that contains its `manifest.json` (e.g. `Normaliser/`).
-5. The extension’s icon (e.g. “Audio Normalizer & EQ”) appears in your Chrome toolbar. Click it while audio is playing in the active tab to open the popup.
+5. The extension’s icon (e.g. “Audio Normalizer & EQ”) appears in your Chrome toolbar. Click it while audio is playing to let the extension inject into the active tab.
+
+## How it runs without host permissions
+- The extension does not declare `host_permissions` or `content_scripts` that auto-inject on every site.
+- Instead, it relies on `activeTab` + `scripting` to inject `content.js` into the currently active tab when you open the popup.
+- If you navigate or change tabs, open the popup again to re-inject on the new page.
 
 ## Updating an Extension
 - Make changes to the files inside its folder.
 - Return to `chrome://extensions/` and click the **Reload** (↻) button on the extension card.
 - Reopen the popup to see changes.
 
-## Common Files
-- `manifest.json`: Declares extension metadata and permissions.
-- `content.js`: Injected into matched pages; implements core logic (e.g. audio chain).
-- `popup.html` / `popup.js`: User interface code opened from the browser toolbar.
-- `Readme.md`: Optional per-extension documentation.
-
 ## Troubleshooting
-- If the popup shows no activity, interact (play/pause) with the page; Chrome may suspend the AudioContext until a gesture.
-- Confirm the site matches host permissions and/or your allowlist if the extension has one.
+- If the popup shows no activity, interact with the page (play/pause) so the AudioContext is allowed to run.
+- Because there are no host permissions, the extension only runs on the tab after you open the popup. Reopen the popup after changing tabs.
 - Open DevTools (F12) → Console for the page or the extension popup to inspect errors.
 
-## Contributing / Adding a New Extension
-1. Create a new folder (e.g. `MyExtension/`).
-2. Add a `manifest.json` (Manifest V3 recommended) plus your scripts and UI.
-3. Document the extension in its own `Readme.md` and list it in the **Current Extensions** section above.
-4. Test via Developer mode load and verify functionality.
+## Contributing
+- Create a new folder for your extension with a `manifest.json` and code.
+- Document it in `Readme.md` and test via Developer mode.
 
 ## License
 Unless otherwise stated in a per‑extension folder, assume these extensions are provided "as is" by **r00tmebaby**. Add license details here if you choose a specific license (MIT, GPL, etc.).
 
 ---
 Feel free to open issues or pull requests for improvements and new extension ideas.
-
