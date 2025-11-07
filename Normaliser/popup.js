@@ -194,22 +194,6 @@ async function init() {
 
 init().catch(() => {});
 
-// Ensure content script is present using activeTab + scripting
-(async function ensureInjected(){
-  try {
-    const tab = await getActiveTab();
-    if (!tab || !tab.id) return;
-    await new Promise((resolve) => {
-      chrome.tabs.sendMessage(tab.id, { type: 'ping' }, () => resolve());
-    });
-  } catch {}
-  try {
-    const tab = await getActiveTab();
-    if (!tab || !tab.id) return;
-    await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] });
-  } catch {}
-})();
-
 // Presets
 presetSelect?.addEventListener('change', (e)=>applyPresetSelection(e.target.value));
 savePresetBtn?.addEventListener('click', async () => {
