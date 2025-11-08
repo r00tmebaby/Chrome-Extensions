@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAE Extension Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        header {
+            background: #2563eb;
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        main {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        aside {
+            background: #e5e7eb;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        footer {
+            background: #374151;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        a {
+            color: #2563eb;
+        }
+        video {
+            width: 100%;
+            max-width: 640px;
+            margin: 20px 0;
+        }
+        .animated-box {
+            width: 100px;
+            height: 100px;
+            background: #ef4444;
+            animation: bounce 2s infinite;
+            margin: 20px 0;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Universal Accessibility Enhancer Test Page</h1>
+        <p>Use this page to test all features of the UAE extension</p>
+    </header>
+
+    <aside>
+        <h3>Sidebar Content</h3>
+        <p>This sidebar should be dimmed in Easy Read mode and Focus Mode.</p>
+        <ul>
+            <li>Navigation item 1</li>
+            <li>Navigation item 2</li>
+            <li>Navigation item 3</li>
+        </ul>
+    </aside>
+
+    <main role="main">
+        <article>
+            <h2>Main Article Content</h2>
+
+            <section>
+                <h3>Test Instructions</h3>
+                <p>Open the UAE extension popup (click the extension icon) and try these features:</p>
+                <ol>
+                    <li><strong>Easy Read Mode:</strong> Should narrow the content width and dim the sidebar/header/footer</li>
+                    <li><strong>Focus Mode:</strong> Should blur non-main content</li>
+                    <li><strong>Font Changes:</strong> Try OpenDyslexic or Atkinson Hyperlegible fonts</li>
+                    <li><strong>Vision Boost:</strong> Should increase contrast and saturation slightly</li>
+                    <li><strong>High Contrast:</strong> Should apply white text on black background</li>
+                    <li><strong>Color Filters:</strong> Try Protanopia, Deuteranopia, or Grayscale</li>
+                    <li><strong>Reduce Motion:</strong> Should stop the red box animation below</li>
+                    <li><strong>Text Size:</strong> Adjust in options to see text scale</li>
+                    <li><strong>Reader View:</strong> Click the Reader View button in the popup</li>
+                </ol>
+            </section>
+
+            <section>
+                <h3>Animation Test</h3>
+                <p>The box below should stop animating when "Reduce Motion" is enabled:</p>
+                <div class="animated-box"></div>
+            </section>
+
+            <section>
+                <h3>Link Test</h3>
+                <p>These links should be underlined when "Underline Links" is enabled:</p>
+                <p>
+                    <a href="#test1">Test Link 1</a> |
+                    <a href="#test2">Test Link 2</a> |
+                    <a href="#test3">Test Link 3</a>
+                </p>
+            </section>
+
+            <section>
+                <h3>Typography Test</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+
+                <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+                <h4>Heading Level 4</h4>
+                <p>This paragraph tests line height adjustments. The spacing between lines should increase when you adjust the Line Height setting in the options page.</p>
+
+                <h5>Heading Level 5</h5>
+                <p><strong>Bold text</strong> and <em>italic text</em> should render correctly with custom fonts.</p>
+
+                <h6>Heading Level 6</h6>
+                <p>Font size adjustments should apply to all text on the page proportionally.</p>
+            </section>
+
+            <section>
+                <h3>Button Test</h3>
+                <p>These buttons should have larger hit targets when enabled:</p>
+                <button onclick="alert('Button 1 clicked')">Button 1</button>
+                <button onclick="alert('Button 2 clicked')">Button 2</button>
+                <button onclick="alert('Button 3 clicked')">Button 3</button>
+            </section>
+
+            <section>
+                <h3>Preset Test</h3>
+                <p>Try the preset buttons in the popup:</p>
+                <ul>
+                    <li><strong>Dyslexia Preset:</strong> Easy Read + OpenDyslexic font + increased spacing</li>
+                    <li><strong>ADHD Preset:</strong> Focus Mode + Reduce Motion + Auto Pause</li>
+                    <li><strong>Low Vision Preset:</strong> Easy Read + larger text + Vision Boost + High Contrast</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>Video Test (Auto Pause)</h3>
+                <p>When "Auto Pause Media" is enabled, videos should not autoplay:</p>
+                <video controls autoplay muted loop>
+                    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <p><small>Note: The video above has autoplay attribute. With Auto Pause enabled, it should be paused.</small></p>
+            </section>
+
+            <section>
+                <h3>Color Test</h3>
+                <p>Test color filters on these colored elements:</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0;">
+                    <div style="width: 80px; height: 80px; background: #ef4444; border-radius: 4px;"></div>
+                    <div style="width: 80px; height: 80px; background: #10b981; border-radius: 4px;"></div>
+                    <div style="width: 80px; height: 80px; background: #3b82f6; border-radius: 4px;"></div>
+                    <div style="width: 80px; height: 80px; background: #f59e0b; border-radius: 4px;"></div>
+                    <div style="width: 80px; height: 80px; background: #8b5cf6; border-radius: 4px;"></div>
+                    <div style="width: 80px; height: 80px; background: #ec4899; border-radius: 4px;"></div>
+                </div>
+            </section>
+        </article>
+    </main>
+
+    <footer>
+        <p>Footer Content - Should be dimmed in Easy Read mode</p>
+        <p>&copy; 2025 UAE Extension Test Page</p>
+    </footer>
+</body>
+</html>
+

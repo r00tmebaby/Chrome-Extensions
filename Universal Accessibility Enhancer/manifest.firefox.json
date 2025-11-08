@@ -1,0 +1,55 @@
+{
+  "manifest_version": 2,
+  "name": "Universal Accessibility Enhancer",
+  "short_name": "UAE",
+  "version": "0.1.0",
+  "description": "AI-assisted accessibility companion: Easy Read, Focus Mode, Vision Boost, contrast boost, color filters, and more.",
+  "browser_action": {
+    "default_title": "Universal Accessibility Enhancer",
+    "default_popup": "src/popup/popup.html"
+  },
+  "icons": {
+    "16": "src/assets/icon16.png",
+    "48": "src/assets/icon48.png",
+    "128": "src/assets/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["src/background/background.js"],
+    "persistent": false
+  },
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
+  "commands": {
+    "toggle-focus-mode": {
+      "suggested_key": { "default": "Alt+Shift+F" },
+      "description": "Toggle Focus Mode"
+    },
+    "toggle-easy-read": {
+      "suggested_key": { "default": "Alt+Shift+E" },
+      "description": "Toggle Easy Read Mode"
+    },
+    "toggle-vision-boost": {
+      "suggested_key": { "default": "Alt+Shift+V" },
+      "description": "Toggle Vision Boost"
+    }
+  },
+  "web_accessible_resources": [
+    "src/assets/fonts/*.woff2",
+    "src/content/fonts.css"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/common/utils.js", "src/common/fontConfig.js", "src/content/content.js"],
+      "css": ["src/content/content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

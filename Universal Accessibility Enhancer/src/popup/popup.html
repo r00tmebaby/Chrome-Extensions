@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>UAE</title>
+  <link rel="stylesheet" href="popup.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <main>
+    <div class="brand">
+      <img src="../assets/icon16.png" alt="UAE logo" />
+      <div class="title-row">
+        <span class="name">UAE</span>
+        <span class="tagline">Universal Accessibility Tool</span>
+      </div>
+    </div>
+    <div id="notice" class="notice" aria-live="polite">
+      <span id="notice-text"></span>
+      <button id="retry-inject" class="linklike" style="display:none" title="Try injecting the content script again">Retry</button>
+      <span id="notice-info" class="icon" title=""></span>
+    </div>
+
+    <section class="block">
+      <h2 class="section-title">Modes</h2>
+      <div class="row">
+        <button class="chip" data-preset="dyslexia" title="Easy Read, dyslexic-friendly font, spacing">Dyslexia</button>
+        <button class="chip" data-preset="adhd" title="Focus, reduce motion, auto pause">ADHD</button>
+        <button class="chip" data-preset="lowvision" title="Easy Read, larger text, high contrast">Low Vision</button>
+      </div>
+      <div class="row">
+        <button class="chip" data-action="toggle-mode" data-mode="easy" title="Simplify layout for reading">Easy Read</button>
+        <button class="chip" data-action="toggle-flag" data-flag="focusMode" title="Dim distractions outside main content">Focus</button>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2 class="section-title">Vision</h2>
+      <div class="row">
+        <button class="chip" data-action="toggle-flag" data-flag="visionBoost" title="Gently increase contrast">Vision Boost</button>
+        <button class="chip" data-action="toggle-flag" data-flag="highContrast" title="High contrast dark theme">High Contrast</button>
+      </div>
+      <label>Color Filter
+        <select id="colorFilter">
+          <option value="none">None</option>
+          <option value="protanopia">Protanopia</option>
+          <option value="deuteranopia">Deuteranopia</option>
+          <option value="tritanopia">Tritanopia</option>
+          <option value="achromatopsia">Grayscale</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="block">
+      <h2 class="section-title">Reading</h2>
+      <label>Font family
+        <select id="font">
+          <option value="default">Default</option>
+          <option value="dyslexic">OpenDyslexic</option>
+          <option value="atkinson">Atkinson Hyperlegible</option>
+          <option value="system-ui">System UI</option>
+          <option value="verdana">Verdana</option>
+          <option value="georgia">Georgia</option>
+          <option value="arial">Arial</option>
+          <option value="large">Large (size only)</option>
+        </select>
+      </label>
+      <div class="row">
+        <label class="inline">Weight
+          <select id="fontWeight">
+            <option value="normal">Normal</option>
+            <option value="500">Medium</option>
+            <option value="bold">Bold</option>
+          </select>
+        </label>
+        <label class="inline">Style
+          <select id="fontStyle">
+            <option value="normal">Normal</option>
+            <option value="italic">Italic</option>
+          </select>
+        </label>
+      </div>
+      <div class="row">
+        <button class="chip" id="reader-view" title="Open simplified reader view">Reader View</button>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2 class="section-title">Motion & Media</h2>
+      <div class="row">
+        <button class="chip" data-action="toggle-flag" data-flag="reduceMotion" title="Remove animations">Reduce Motion</button>
+        <button class="chip" data-action="toggle-flag" data-flag="autoPauseMedia" title="Pause autoplaying media">Auto Pause Media</button>
+      </div>
+    </section>
+
+    <footer>
+      <a id="open-options" href="#">Options</a>
+      <span class="note">Local only · No data leaves your browser</span>
+    </footer>
+  </main>
+  <script src="../common/utils.js"></script>
+  <script src="../common/fontConfig.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+html, body { width: 320px; margin: 0; padding: 0; }
+body { font-family: system-ui, sans-serif; background:#0b0b0b; color:#eaeaea; }
+main { padding: 12px; }
+header { display:flex; align-items:center; justify-content:space-between; }
+h1 { font-size: 18px; margin:0; }
+.subtitle { font-size: 12px; opacity: 0.8; }
+.grid { display:grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 12px 0; }
+button { padding: 8px; border: 1px solid #333; border-radius: 8px; background:#171717; color:#eaeaea; cursor:pointer; }
+button:hover { background:#1e1e1e; }
+label { display:block; margin: 8px 0; }
+select { width:100%; padding:6px; background:#111; color:#fff; border-radius:6px; border:1px solid #333; }
+footer { display:flex; justify-content:space-between; align-items:center; margin-top: 10px; }
+#open-options { color:#60a5fa; text-decoration:none; }
+.note { font-size: 11px; opacity:0.7; }
+.brand { display:flex; align-items:center; gap:8px; }
+.brand .name { font-weight:700; font-size:16px; line-height:1; }
+.brand .sub { font-size:11px; color:#a3a3a3; }
+.block { border-top:1px solid #1f1f1f; padding-top:10px; margin-top:10px; }
+.section-title { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:#9aa3ad; margin:0 0 6px; }
+.row { display:flex; gap:8px; flex-wrap:wrap; }
+.chip { padding:6px 10px; border-radius:999px; border:1px solid #333; background:#171717; color:#eaeaea; cursor:pointer; font-size:12px; }
+.chip:hover { background:#1e1e1e; }
+label.inline { display:flex; flex-direction:column; flex:1; }
+.title-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.title-row .tagline { font-size:11px; color:#9aa3ad; font-weight:400; }
+.notice { font-size:11px; color:#fbbf24; margin:4px 0 8px; min-height:14px; }
+.linklike { background:none; border:none; color:#60a5fa; cursor:pointer; font-size:11px; padding:0 4px; }
+.linklike:hover { text-decoration:underline; }
+.notice .icon { width:10px; height:10px; display:inline-block; background:#60a5fa; border-radius:50%; margin-left:4px; position:relative; }
+.notice .icon:after { content:'i'; position:absolute; top:50%; left:50%; transform:translate(-50%,-55%); font-size:8px; color:#0b0b0b; font-weight:700; }

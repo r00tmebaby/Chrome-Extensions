@@ -1,0 +1,577 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>UAE Options</title>
+  <link rel="stylesheet" href="options.css" />
+  <style>
+    .topbar { display:flex; align-items:center; justify-content:space-between; margin: 10px 0 16px; }
+    .brand-left { display:flex; align-items:center; gap:10px; }
+    .brand-left img { width:28px; height:28px; }
+    .brand-left .name { font-weight: 700; font-size: 18px; letter-spacing: .4px; }
+    .tagline { color:#9aa3ad; font-size: 12px; text-align: right; }
+    .tabs { display:flex; gap:8px; margin-bottom:10px; flex-wrap: wrap; }
+    .tabs button { padding:6px 10px; border-radius:6px; border:1px solid #444; background:#1a1a1a; color:#ddd; cursor:pointer; }
+    .tabs button.active { background:#2563eb; border-color:#2563eb; color:#fff; }
+    .tab { display:none; }
+    .tab.active { display:block; }
+    section label { display:block; margin:8px 0; }
+    .row { display:flex; gap:12px; align-items:center; flex-wrap: wrap; }
+    .hint { color:#8a8a8a; font-size:12px; }
+    .help h3 { margin: 12px 0 6px; }
+    .help p, .help li { color:#cfd6de; }
+    footer.footer-meta { margin-top: 24px; color:#8a8a8a; font-size:12px; border-top:1px solid #2c2c2c; padding-top:10px; text-align: right; }
+    footer.footer-meta a { color:#9ec1ff; text-decoration: none; }
+    fieldset.group { margin-bottom: 16px; padding: 16px; border: 1px solid #444; border-radius: 8px; }
+    legend { font-weight: 700; font-size: 14px; color: #ddd; padding: 0 8px; }
+
+    /* Two-Column Help Layout */
+    .help-container { display: grid; grid-template-columns: 280px 1fr; gap: 20px; min-height: 500px; }
+    .help-nav { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px; height: fit-content; position: sticky; top: 20px; }
+    .help-nav-title { font-size: 14px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 12px 0; padding: 0 8px; }
+    .help-nav-item { padding: 12px 12px; margin-bottom: 4px; cursor: pointer; font-size: 14px; color: #ccc; background: transparent; border: none; border-radius: 6px; transition: all 0.2s; text-align: left; width: 100%; display: block; }
+    .help-nav-item:hover { background: #242424; color: #fff; }
+    .help-nav-item.active { background: #2563eb; color: #fff; font-weight: 600; }
+    .help-content-area { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 24px; min-height: 400px; }
+    .help-section { display: none; }
+    .help-section.active { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .help-section h2 { color: #fff; font-size: 24px; margin: 0 0 8px 0; }
+    .help-section h3 { color: #2563eb; font-size: 18px; margin: 24px 0 12px 0; border-bottom: 1px solid #333; padding-bottom: 8px; }
+    .help-section h3:first-of-type { margin-top: 12px; }
+    .help-section h4 { color: #fff; margin: 16px 0 8px 0; font-size: 15px; }
+    .help-section p { margin: 8px 0; line-height: 1.7; color: #ccc; }
+    .help-section ul, .help-section ol { margin: 8px 0 8px 24px; line-height: 1.8; color: #ccc; }
+    .help-section li { margin: 6px 0; }
+    .help-section code { background: #222; padding: 2px 8px; border-radius: 4px; font-family: 'Courier New', monospace; color: #9ec1ff; font-size: 13px; }
+    .help-section em { color: #999; font-style: italic; }
+    .help-section strong { color: #fff; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="topbar">
+      <div class="brand-left">
+        <img src="../assets/icon48.png" alt="UAE logo" />
+        <div class="name">UAE</div>
+      </div>
+        <div class="tagline">Universal Accessibility Tool</div>
+    </div>
+
+    <div class="tabs">
+      <button data-tab="modes" class="active">Modes</button>
+      <button data-tab="vision">Vision</button>
+      <button data-tab="reading">Reading</button>
+      <button data-tab="media">Media</button>
+      <button data-tab="advanced">Advanced</button>
+      <button data-tab="help">Help</button>
+    </div>
+
+    <div id="tab-modes" class="tab active">
+      <fieldset class="group">
+        <legend>Presets</legend>
+        <div class="row">
+          <button id="preset-dyslexia" title="Easy Read, OpenDyslexic, spacing, reduced motion">Dyslexia</button>
+          <button id="preset-adhd" title="Focus, reduce motion, auto pause media">ADHD</button>
+          <button id="preset-lowvision" title="Easy Read, larger text, vision + contrast">Low Vision</button>
+        </div>
+      </fieldset>
+      <fieldset class="group">
+        <legend>Mode & Layout</legend>
+        <label title="Default adaptation mode">Default Mode
+          <select id="mode">
+            <option value="manual">Manual</option>
+            <option value="easy">Easy Read</option>
+          </select>
+        </label>
+        <label title="Dim distractions and emphasize main content"><input type="checkbox" id="focusMode" /> Focus Mode default</label>
+        <label title="Base reading font family">Font family
+          <select id="font">
+            <option value="default">Default</option>
+            <option value="dyslexic">OpenDyslexic</option>
+            <option value="atkinson">Atkinson Hyperlegible</option>
+            <option value="system-ui">System UI</option>
+            <option value="verdana">Verdana</option>
+            <option value="georgia">Georgia</option>
+            <option value="arial">Arial</option>
+            <option value="large">Large (size only)</option>
+          </select>
+        </label>
+      </fieldset>
+    </div>
+
+    <div id="tab-vision" class="tab">
+      <fieldset class="group">
+        <legend>Vision Adjustments</legend>
+        <label title="Boost contrast & saturation"><input type="checkbox" id="visionBoost" /> Vision Boost</label>
+        <label title="High contrast dark theme"><input type="checkbox" id="highContrast" /> High Contrast</label>
+        <label title="Color filter simulation">Color Filter
+          <select id="colorFilter">
+            <option value="none">None</option>
+            <option value="protanopia">Protanopia</option>
+            <option value="deuteranopia">Deuteranopia</option>
+            <option value="tritanopia">Tritanopia</option>
+            <option value="achromatopsia">Grayscale</option>
+          </select>
+        </label>
+        <label title="Increase size of interactive targets"><input type="checkbox" id="largeHitTargets" /> Larger hit targets</label>
+      </fieldset>
+    </div>
+
+    <div id="tab-reading" class="tab">
+      <fieldset class="group">
+        <legend>Reading Comfort</legend>
+        <label title="Remove animations & transitions"><input type="checkbox" id="reduceMotion" /> Reduce Motion</label>
+        <label title="Thicker focus outline for keyboard navigation"><input type="checkbox" id="focusBoost" /> Keyboard Focus Boost</label>
+        <label title="Underline all hyperlinks"><input type="checkbox" id="underlineLinks" /> Underline links</label>
+        <label for="textSize" title="Scale base text size">Text Size: <span id="textSizeValue" class="hint">100%</span></label>
+        <input type="range" id="textSize" min="80" max="200" value="100" />
+        <label for="lineHeight" title="Adjust line spacing">Line Height: <span id="lineHeightValue" class="hint">1.6</span></label>
+        <input type="range" id="lineHeight" min="12" max="26" value="16" />
+        <div class="hint">12 = 1.2 · 26 = 2.6</div>
+      </fieldset>
+    </div>
+
+    <div id="tab-media" class="tab">
+      <fieldset class="group">
+        <legend>Media & Speech</legend>
+        <label title="Pause autoplay video/audio"><input type="checkbox" id="autoPauseMedia" /> Auto Pause Media</label>
+        <label title="Read main content aloud"><input type="checkbox" id="ttsOn" /> Read Aloud (TTS)</label>
+      </fieldset>
+    </div>
+
+    <div id="tab-advanced" class="tab">
+      <fieldset class="group">
+        <legend>User Profile</legend>
+        <label><input type="checkbox" id="prof-dyslexia" /> Dyslexia</label>
+        <label><input type="checkbox" id="prof-adhd" /> ADHD / Focus difficulty</label>
+        <label><input type="checkbox" id="prof-lowvision" /> Low Vision</label>
+        <label><input type="checkbox" id="prof-colorblind" /> Color Blindness</label>
+        <label><input type="checkbox" id="prof-epilepsy" /> Epilepsy / Light sensitivity</label>
+        <button id="save-profile">Save Profile</button>
+      </fieldset>
+      <fieldset class="group">
+        <legend>Persistence</legend>
+        <div class="actions-row">
+          <button id="save">Save Global</button>
+          <button id="save-domain">Save Domain Override</button>
+          <button id="reset-defaults" title="Reset all global settings to defaults">Reset Defaults</button>
+        </div>
+      </fieldset>
+    </div>
+
+    <div id="tab-help" class="tab help">
+      <div class="help-container">
+        <!-- Left Navigation -->
+        <div class="help-nav">
+          <div class="help-nav-title">Help Topics</div>
+          <button class="help-nav-item active" data-help="getting-started">🚀 Getting Started</button>
+          <button class="help-nav-item" data-help="presets">⚡ Quick Presets</button>
+          <button class="help-nav-item" data-help="modes">📖 Modes & Layout</button>
+          <button class="help-nav-item" data-help="vision">👁️ Vision Adjustments</button>
+          <button class="help-nav-item" data-help="reading">📏 Reading Comfort</button>
+          <button class="help-nav-item" data-help="media">🎬 Media & Speech</button>
+          <button class="help-nav-item" data-help="advanced">⚙️ Advanced Features</button>
+          <button class="help-nav-item" data-help="shortcuts">⌨️ Keyboard Shortcuts</button>
+          <button class="help-nav-item" data-help="privacy">🔒 Privacy & Data</button>
+          <button class="help-nav-item" data-help="troubleshooting">🔧 Troubleshooting</button>
+        </div>
+
+        <!-- Right Content Area -->
+        <div class="help-content-area">
+
+          <!-- Getting Started -->
+          <section class="help-section active" id="help-getting-started">
+            <h2>🚀 Getting Started</h2>
+
+            <h3>What is UAE?</h3>
+            <p>Universal Accessibility Enhancer (UAE) makes websites more accessible by adjusting text, colors, layout, and behavior to meet your specific needs. All changes happen locally in your browser - no data is collected or sent anywhere.</p>
+
+            <h3>Quick Start Guide</h3>
+            <ol>
+              <li><strong>Try a Preset</strong>: Click Dyslexia, ADHD, or Low Vision buttons in the Modes tab for instant configuration</li>
+              <li><strong>Adjust Settings</strong>: Fine-tune individual options across different tabs</li>
+              <li><strong>See Changes Live</strong>: All adjustments apply immediately to the current page as a preview</li>
+              <li><strong>Save Your Preferences</strong>: Click "Save Global" to apply everywhere, or "Save Domain Override" for specific sites</li>
+            </ol>
+
+            <h3>Who Is This For?</h3>
+            <ul>
+              <li>People with dyslexia or reading difficulties</li>
+              <li>People with ADHD or focus challenges</li>
+              <li>People with visual impairments</li>
+              <li>People with color blindness</li>
+              <li>People with photosensitivity or epilepsy</li>
+              <li>Anyone who wants a better reading experience!</li>
+            </ul>
+          </section>
+
+          <!-- Quick Presets -->
+          <section class="help-section" id="help-presets">
+            <h2>⚡ Quick Presets</h2>
+
+            <h3>Dyslexia Preset</h3>
+            <p><strong>Best for:</strong> People with dyslexia or reading difficulties</p>
+            <h4>What it does:</h4>
+            <ul>
+              <li>Activates Easy Read mode (simplified layout, increased spacing)</li>
+              <li>Switches to OpenDyslexic font (designed specifically for dyslexia)</li>
+              <li>Increases text size to 110% and line height to 2.0</li>
+              <li>Reduces motion (stops distracting animations)</li>
+              <li>Dims non-essential content</li>
+            </ul>
+
+            <h3>ADHD Preset</h3>
+            <p><strong>Best for:</strong> People with ADHD or focus difficulties</p>
+            <h4>What it does:</h4>
+            <ul>
+              <li>Activates Focus Mode (blurs distractions, highlights main content)</li>
+              <li>Reduces motion (removes all animations and transitions)</li>
+              <li>Auto-pauses videos and media</li>
+              <li>Uses System UI font for familiarity</li>
+              <li>Increases line height to 1.8 for better readability</li>
+            </ul>
+
+            <h3>Low Vision Preset</h3>
+            <p><strong>Best for:</strong> People with low vision or visual impairments</p>
+            <h4>What it does:</h4>
+            <ul>
+              <li>Activates Easy Read mode</li>
+              <li>Increases text size to 140% and line height to 2.2</li>
+              <li>Enables Vision Boost (increases contrast and saturation)</li>
+              <li>Activates High Contrast mode (white text on black background)</li>
+              <li>Uses Verdana font (highly legible)</li>
+            </ul>
+          </section>
+
+          <!-- Modes & Layout -->
+          <section class="help-section" id="help-modes">
+            <h2>📖 Modes & Layout</h2>
+
+            <h3>Easy Read Mode</h3>
+            <p>Simplifies web pages for easier reading by:</p>
+            <ul>
+              <li>Narrowing line length to 70-72 characters (optimal for reading)</li>
+              <li>Increasing spacing between paragraphs</li>
+              <li>Dimming sidebars, headers, and footers (opacity reduced to 25%)</li>
+              <li>Hiding sticky headers and floating ads</li>
+              <li>Centering main content automatically</li>
+            </ul>
+
+            <h3>Focus Mode</h3>
+            <p>Helps you concentrate by:</p>
+            <ul>
+              <li>Blurring everything except main content (4px blur + 40% brightness reduction)</li>
+              <li>Highlighting the main article/content area</li>
+              <li>Removing distractions without hiding them completely</li>
+              <li>Works great for reading articles or long-form content</li>
+            </ul>
+
+            <h3>Font Families</h3>
+            <h4>OpenDyslexic</h4>
+            <p>Specially designed for dyslexia with weighted bottom letters to prevent letter confusion.</p>
+
+            <h4>Atkinson Hyperlegible</h4>
+            <p>Created by Braille Institute for maximum legibility - distinguishes similar letters clearly.</p>
+
+            <h4>System UI</h4>
+            <p>Your device's native font - familiar and fast-rendering.</p>
+
+            <h4>Verdana / Georgia / Arial</h4>
+            <p>Readable standard fonts optimized for screen reading.</p>
+
+            <h4>Large (size only)</h4>
+            <p>Keeps current font but increases size to 110%.</p>
+          </section>
+
+          <!-- Vision Adjustments -->
+          <section class="help-section" id="help-vision">
+            <h2>👁️ Vision Adjustments</h2>
+
+            <h3>Vision Boost</h3>
+            <p>Gently increases contrast (1.2x) and saturation (1.05x) for better visibility without being harsh.</p>
+            <h4>Great for:</h4>
+            <ul>
+              <li>Low contrast websites</li>
+              <li>Viewing in bright sunlight</li>
+              <li>Mild vision impairments</li>
+              <li>Reducing eye strain</li>
+            </ul>
+
+            <h3>High Contrast Mode</h3>
+            <p>Maximum contrast for severe vision impairments:</p>
+            <ul>
+              <li>Forces white text on black background</li>
+              <li>High contrast borders on all elements</li>
+              <li>Removes background images</li>
+              <li>Simplifies color schemes drastically</li>
+            </ul>
+
+            <h3>Color Filters</h3>
+            <p>Simulates color transformations for different types of color blindness:</p>
+            <h4>Protanopia</h4>
+            <p>Red-blind - Helps distinguish red from other colors</p>
+
+            <h4>Deuteranopia</h4>
+            <p>Green-blind - Transforms greens to be more visible</p>
+
+            <h4>Tritanopia</h4>
+            <p>Blue-blind - Adjusts blue tones for better distinction</p>
+
+            <h4>Grayscale (Achromatopsia)</h4>
+            <p>Complete color blindness - Removes all colors</p>
+
+            <h3>Larger Hit Targets</h3>
+            <p>Increases the size of interactive elements:</p>
+            <ul>
+              <li>All buttons, links, and inputs get minimum 36x36px size</li>
+              <li>Increased padding (8px-12px) for easier clicking</li>
+              <li>Helpful for motor impairments or touch screen users</li>
+            </ul>
+          </section>
+
+          <!-- Reading Comfort -->
+          <section class="help-section" id="help-reading">
+            <h2>📏 Reading Comfort</h2>
+
+            <h3>Text Size Slider (80% - 200%)</h3>
+            <p>Scales all text on the page proportionally:</p>
+            <ul>
+              <li><strong>80-90%</strong>: Smaller text for fitting more on screen</li>
+              <li><strong>100%</strong>: Default website size</li>
+              <li><strong>110-140%</strong>: Comfortable reading size for most users</li>
+              <li><strong>140-200%</strong>: Large text for low vision users</li>
+            </ul>
+            <p><em>Changes apply in real-time as you drag the slider!</em></p>
+
+            <h3>Line Height Slider (1.2 - 2.6)</h3>
+            <p>Adjusts spacing between lines of text:</p>
+            <ul>
+              <li><strong>1.2-1.4</strong>: Compact spacing</li>
+              <li><strong>1.6-1.8</strong>: Comfortable reading (recommended)</li>
+              <li><strong>2.0-2.6</strong>: Extra spacing for dyslexia or visual tracking difficulties</li>
+            </ul>
+            <p><em>Higher values prevent lines from blending together.</em></p>
+
+            <h3>Reduce Motion</h3>
+            <p>Removes all animations and transitions:</p>
+            <ul>
+              <li>Stops spinning loaders, sliding banners, bouncing elements</li>
+              <li>Prevents motion sickness and distraction</li>
+              <li>Essential for vestibular disorders or photosensitivity</li>
+              <li>Makes pages feel faster and more stable</li>
+            </ul>
+
+            <h3>Keyboard Focus Boost</h3>
+            <p>Enhances the visual outline when navigating with Tab key:</p>
+            <ul>
+              <li>3px thick yellow outline (vs standard thin outline)</li>
+              <li>3px offset for better visibility</li>
+              <li>Helps keyboard-only users see where they are</li>
+            </ul>
+
+            <h3>Underline Links</h3>
+            <p>Forces underlines on all hyperlinks:</p>
+            <ul>
+              <li>Makes links immediately identifiable</li>
+              <li>Doesn't rely on color alone</li>
+              <li>Helpful for color blindness</li>
+            </ul>
+          </section>
+
+          <!-- Media & Speech -->
+          <section class="help-section" id="help-media">
+            <h2>🎬 Media & Speech</h2>
+
+            <h3>Auto Pause Media</h3>
+            <p>Automatically pauses autoplaying videos and audio:</p>
+            <ul>
+              <li>Stops videos from playing automatically</li>
+              <li>Pauses background music</li>
+              <li>You can still click to play manually</li>
+              <li>Freezes animated GIFs (converts to static PNG)</li>
+              <li>Reduces sensory overload and distractions</li>
+            </ul>
+
+            <h3>Read Aloud (Text-to-Speech)</h3>
+            <p>Reads main content using browser's built-in voice:</p>
+            <ul>
+              <li>Finds main article content automatically</li>
+              <li>Reads headings, paragraphs, and list items</li>
+              <li>Up to 8,000 characters per reading</li>
+              <li>Uses native browser TTS (no external services)</li>
+              <li>Toggle off to stop reading immediately</li>
+            </ul>
+            <p><em>Note: Voice quality depends on your browser and OS.</em></p>
+          </section>
+
+          <!-- Advanced Features -->
+          <section class="help-section" id="help-advanced">
+            <h2>⚙️ Advanced Features</h2>
+
+            <h3>User Profile</h3>
+            <p>Save your condition profile for future automatic adjustments:</p>
+            <ul>
+              <li><strong>Dyslexia</strong>: Reading difficulties</li>
+              <li><strong>ADHD / Focus difficulty</strong>: Attention challenges</li>
+              <li><strong>Low Vision</strong>: Visual impairments</li>
+              <li><strong>Color Blindness</strong>: Color perception difficulties</li>
+              <li><strong>Epilepsy / Light sensitivity</strong>: Photosensitivity</li>
+            </ul>
+            <p><em>Currently for tracking only - future versions may auto-apply recommended settings.</em></p>
+
+            <h3>Save Options</h3>
+            <h4>Save Global</h4>
+            <p>Apply these settings to all websites you visit. Changes persist across browser restarts.</p>
+
+            <h4>Save Domain Override</h4>
+            <p>Save settings only for the current website (e.g., different settings for Wikipedia vs Reddit). Domain-specific settings take priority over global settings.</p>
+
+            <h4>Reset to Defaults</h4>
+            <p>Restore all settings to safe default values. This clears all customizations.</p>
+
+            <h3>Preview vs Save</h3>
+            <p><strong>Important:</strong> All changes show as a live preview on the current page, but they're temporary until you click Save!</p>
+            <ul>
+              <li>Adjust sliders/checkboxes → See changes immediately</li>
+              <li>Click "Save Global" → Make changes permanent</li>
+              <li>Close options without saving → Changes are lost</li>
+            </ul>
+          </section>
+
+          <!-- Keyboard Shortcuts -->
+          <section class="help-section" id="help-shortcuts">
+            <h2>⌨️ Keyboard Shortcuts</h2>
+
+            <h3>Quick Access Shortcuts</h3>
+            <p>Use these keyboard combinations for instant access:</p>
+            <ul>
+              <li><code>Alt + Shift + F</code> - Toggle Focus Mode on/off</li>
+              <li><code>Alt + Shift + E</code> - Toggle Easy Read Mode on/off</li>
+              <li><code>Alt + Shift + V</code> - Toggle Vision Boost on/off</li>
+            </ul>
+            <p><em>Works on any page without opening the popup or options!</em></p>
+
+            <h3>Customizing Shortcuts</h3>
+            <h4>Chrome</h4>
+            <ol>
+              <li>Go to <code>chrome://extensions/shortcuts</code></li>
+              <li>Find "Universal Accessibility Enhancer"</li>
+              <li>Click the pencil icon next to each shortcut</li>
+              <li>Set your preferred key combinations</li>
+            </ol>
+
+            <h4>Firefox</h4>
+            <p>Keyboard shortcuts are not customizable in Firefox currently. The default shortcuts will work as listed above.</p>
+          </section>
+
+          <!-- Privacy & Data -->
+          <section class="help-section" id="help-privacy">
+            <h2>🔒 Privacy & Data</h2>
+
+            <h3>Your Privacy Matters</h3>
+            <p><strong>UAE is 100% local and privacy-respecting:</strong></p>
+            <ul>
+              <li>❌ <strong>No tracking</strong> - We don't monitor what sites you visit</li>
+              <li>❌ <strong>No analytics</strong> - We don't collect usage statistics</li>
+              <li>❌ <strong>No external servers</strong> - All changes happen in your browser</li>
+              <li>❌ <strong>No data sharing</strong> - Nothing is ever sent anywhere</li>
+              <li>✅ <strong>Local storage only</strong> - Settings saved on your device</li>
+              <li>✅ <strong>Open source</strong> - Code is transparent and auditable</li>
+            </ul>
+
+            <h3>Permissions Explained</h3>
+            <h4>storage</h4>
+            <p>Save your preferences locally on your device. No cloud sync.</p>
+
+            <h4>activeTab</h4>
+            <p>Apply changes to the page you're currently viewing. Required to modify page appearance.</p>
+
+            <h4>scripting</h4>
+            <p>Inject CSS/JavaScript to modify page appearance and behavior. All code runs locally.</p>
+
+            <h4>&lt;all_urls&gt;</h4>
+            <p>Work on any website you visit. You choose which sites to apply settings to.</p>
+
+            <p><em>We only request what's absolutely necessary for the extension to function.</em></p>
+
+            <h3>Data Storage</h3>
+            <p>All settings are stored locally using browser storage APIs:</p>
+            <ul>
+              <li>Global preferences</li>
+              <li>Per-domain preferences</li>
+              <li>User profile selections</li>
+            </ul>
+            <p>Nothing is ever transmitted to external servers or third parties.</p>
+          </section>
+
+          <!-- Troubleshooting -->
+          <section class="help-section" id="help-troubleshooting">
+            <h2>🔧 Troubleshooting</h2>
+
+            <h3>Extension Not Working?</h3>
+            <h4>Reload the page</h4>
+            <p>Some sites need a refresh after installing the extension or changing settings.</p>
+
+            <h4>Check restricted pages</h4>
+            <p>Extension can't work on:</p>
+            <ul>
+              <li><code>chrome://extensions</code> or <code>about:debugging</code></li>
+              <li>Browser settings pages</li>
+              <li>Chrome Web Store or Firefox Add-ons pages</li>
+            </ul>
+
+            <h4>Try incognito mode</h4>
+            <p>Check if other extensions are conflicting. Enable UAE in incognito mode from the extensions page.</p>
+
+            <h4>Clear settings</h4>
+            <p>Click "Reset to Defaults" in Advanced tab to restore default settings.</p>
+
+            <h3>Changes Not Saving?</h3>
+            <ul>
+              <li>Make sure to click <strong>"Save Global"</strong> or <strong>"Save Domain Override"</strong></li>
+              <li>Preview changes are temporary - you must explicitly save them</li>
+              <li>Check browser permissions are granted</li>
+              <li>Try reloading the extension from the extensions page</li>
+            </ul>
+
+            <h3>Fonts Not Loading?</h3>
+            <ul>
+              <li>OpenDyslexic and Atkinson fonts are embedded in the extension</li>
+              <li>If fonts don't show, try reloading the extension</li>
+              <li>Some websites may override fonts with !important CSS</li>
+              <li>Check browser console for errors (F12)</li>
+            </ul>
+
+            <h3>Performance Issues?</h3>
+            <ul>
+              <li>Disable <strong>Read Aloud (TTS)</strong> if not needed</li>
+              <li>Use fewer features at once</li>
+              <li>High Contrast mode is performance-intensive on complex sites</li>
+              <li>Try disabling other browser extensions temporarily</li>
+            </ul>
+
+            <h3>Still Having Issues?</h3>
+            <p>If problems persist:</p>
+            <ol>
+              <li>Check the browser console for errors (F12 → Console tab)</li>
+              <li>Try removing and reinstalling the extension</li>
+              <li>Verify you're using a supported browser (Chrome, Firefox, Edge, Brave)</li>
+              <li>Check if the website has unusual security policies</li>
+            </ol>
+          </section>
+
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer-meta">
+      Developed by <strong>r00tmebaby</strong> · <a href="https://github.com/r00tmebaby" target="_blank" rel="noreferrer noopener">GitHub</a> · © 2025
+    </footer>
+  </main>
+  <script src="../common/utils.js"></script>
+  <script src="../common/fontConfig.js"></script>
+  <script src="tabs.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

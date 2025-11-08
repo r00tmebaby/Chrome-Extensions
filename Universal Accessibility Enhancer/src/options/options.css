@@ -1,0 +1,15 @@
+body { font-family: system-ui, sans-serif; margin: 16px; background:#111; color:#eee; }
+main { max-width: 1024px; margin: 0 auto; }
+label { display: block; margin: 12px 0; }
+select, button { padding: 6px 10px; font-size: 14px; }
+button { background: #2563eb; border: none; color: #fff; border-radius: 4px; cursor: pointer; }
+button:hover { background:#1d4ed8; }
+.note { font-size: 12px; opacity: 0.8; margin-top: 12px; }
+.actions-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.actions-row button { margin: 0; }
+.topbar { margin-bottom: 8px; }
+.tabs { margin-bottom: 16px; }
+fieldset.group { border: 1px solid #2c2c2c; border-radius: 8px; padding: 12px; margin: 14px 0; }
+fieldset.group legend { padding: 0 6px; color: #cfd6de; font-size: 13px; }
+fieldset.group .row { margin-top: 6px; }
+fieldset.group label { margin: 8px 0; }

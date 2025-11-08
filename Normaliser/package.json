@@ -1,0 +1,39 @@
+{
+  "name": "audio-normalizer-eq",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Audio Normalizer & EQ Chrome Extension - Real-time audio processing with parametric EQ",
+  "author": "r00tmebaby",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/r00tmebaby/Browser-Extensions.git",
+    "directory": "Normaliser"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "node tests/e2e/runner.js",
+    "test:all": "npm run verify && npm test && npm run test:e2e",
+    "verify": "node scripts/verify.js",
+    "lint": "echo 'No linter configured yet'",
+    "package": "node scripts/package.js"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "jest": "^29.7.0",
+    "puppeteer": "^21.6.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/unit/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "*.js",
+      "!tests/**"
+    ]
+  }
+}
+

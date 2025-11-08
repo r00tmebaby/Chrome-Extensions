@@ -1,0 +1,50 @@
+{
+  "name": "uae-extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Universal Accessibility Enhancer browser extension (multi-browser scaffold)",
+  "scripts": {
+    "prepare-build": "rimraf build && node scripts/prepare.js",
+    "build:chrome": "npm run prepare-build && node scripts/build.js chrome",
+    "build:firefox": "npm run prepare-build && node scripts/build.js firefox",
+    "build:all": "npm run prepare-build && node scripts/build.js chrome && node scripts/build.js firefox",
+    "zip:chrome": "node scripts/zip.js chrome",
+    "zip:firefox": "node scripts/zip.js firefox",
+    "zip:all": "npm run build:all && node scripts/zip.js chrome && node scripts/zip.js firefox",
+    "verify": "npm run build:all && node scripts/verify.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "node tests/e2e/runner.js",
+    "test:e2e:websites": "node tests/e2e/extended-websites.test.js",
+    "test:e2e:visual": "node tests/e2e/visual-regression.test.js",
+    "test:e2e:firefox": "node tests/e2e/firefox.test.js",
+    "test:e2e:performance": "node tests/e2e/performance-benchmarks.test.js",
+    "test:all": "npm run verify && npm test && npm run test:e2e",
+    "test:complete": "npm run test:all && npm run test:e2e:websites && npm run test:e2e:visual && npm run test:e2e:firefox && npm run test:e2e:performance"
+  },
+  "dependencies": {
+    "@jest/globals": "^29.7.0",
+    "archiver": "^5.3.2",
+    "jest": "^29.7.0",
+    "pixelmatch": "^5.3.0",
+    "pngjs": "^7.0.0",
+    "puppeteer": "^21.6.1",
+    "puppeteer-core": "^21.6.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/unit/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/assets/**"
+    ]
+  },
+  "devDependencies": {
+    "archiver": "^5.3.2",
+    "mkdirp": "^3.0.1",
+    "rimraf": "^5.0.5"
+  }
+}

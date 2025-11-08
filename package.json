@@ -1,0 +1,40 @@
+{
+  "name": "browser-extensions-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser Extensions Collection by r00tmebaby - Multi-browser support (Chrome, Firefox, Edge, Brave)",
+  "author": "r00tmebaby",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/r00tmebaby/Browser-Extensions.git"
+  },
+  "scripts": {
+    "test": "npm run test:all",
+    "test:normaliser": "cd Normaliser && npm install && npm test",
+    "test:uae": "cd \"Universal Accessibility Enhancer\" && npm install && npm test",
+    "test:all": "npm run test:normaliser && npm run test:uae",
+    "test:e2e": "npm run test:e2e:normaliser && npm run test:e2e:uae",
+    "test:e2e:normaliser": "cd Normaliser && npm install && npm run test:e2e",
+    "test:e2e:uae": "cd \"Universal Accessibility Enhancer\" && npm install && npm run test:e2e",
+    "verify": "npm run verify:normaliser && npm run verify:uae",
+    "verify:normaliser": "cd Normaliser && npm install && npm run verify",
+    "verify:uae": "cd \"Universal Accessibility Enhancer\" && npm install && npm run verify",
+    "build:uae": "cd \"Universal Accessibility Enhancer\" && npm install && npm run build:all",
+    "install:all": "npm run install:normaliser && npm run install:uae",
+    "install:normaliser": "cd Normaliser && npm install",
+    "install:uae": "cd \"Universal Accessibility Enhancer\" && npm install",
+    "clean": "npm run clean:normaliser && npm run clean:uae",
+    "clean:normaliser": "cd Normaliser && (if exist node_modules rmdir /s /q node_modules) && (if exist coverage rmdir /s /q coverage)",
+    "clean:uae": "cd \"Universal Accessibility Enhancer\" && (if exist node_modules rmdir /s /q node_modules) && (if exist coverage rmdir /s /q coverage) && (if exist build rmdir /s /q build)"
+  },
+  "workspaces": [
+    "Normaliser",
+    "Universal Accessibility Enhancer"
+  ],
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+
