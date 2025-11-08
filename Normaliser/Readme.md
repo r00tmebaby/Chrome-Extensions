@@ -1,6 +1,6 @@
 # Audio Normalizer & EQ (Chrome Extension)
 
-![Screenshot](normaliser.png)
+![Screenshot](normalizer.png)
 
 A real-time audio normalizer and equalizer for Chrome that boosts loudness consistently across sites, provides a vertical Winamp-style parametric EQ, and shows live audio meters.
 
