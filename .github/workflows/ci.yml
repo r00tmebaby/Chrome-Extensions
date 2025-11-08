@@ -25,14 +25,27 @@ jobs:
           extensions=()
           for dir in */; do
             dir_name="${dir%/}"
-            if [ -f "$dir_name/package.json" ] && [ -f "$dir_name/manifest.json" -o -f "$dir_name/src/manifest.json" -o -f "$dir_name/manifest.chrome.json" ]; then
-              extensions+=("$dir_name")
+            if [ -f "$dir_name/package.json" ]; then
+              if [ -f "$dir_name/manifest.json" ] || [ -f "$dir_name/src/manifest.json" ] || [ -f "$dir_name/manifest.chrome.json" ]; then
+                extensions+=("$dir_name")
+              fi
             fi
           done
           
-          # Create JSON array for matrix
-          matrix_json=$(printf '%s\n' "${extensions[@]}" | jq -R . | jq -s .)
-          echo "matrix=$matrix_json" >> $GITHUB_OUTPUT
+          # Create JSON array for matrix - properly formatted
+          matrix_json="["
+          first=true
+          for ext in "${extensions[@]}"; do
+            if [ "$first" = true ]; then
+              matrix_json="${matrix_json}\"${ext}\""
+              first=false
+            else
+              matrix_json="${matrix_json},\"${ext}\""
+            fi
+          done
+          matrix_json="${matrix_json}]"
+          
+          echo "matrix=${matrix_json}" >> $GITHUB_OUTPUT
           echo "extensions=${extensions[*]}" >> $GITHUB_OUTPUT
           
           echo "📦 Discovered extensions:"
