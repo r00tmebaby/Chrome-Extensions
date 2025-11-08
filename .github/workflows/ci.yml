@@ -90,7 +90,7 @@ jobs:
       - name: Install dependencies
         if: steps.changes.outputs.changed == 'true'
         working-directory: ${{ matrix.extension }}
-        run: npm ci || npm install
+        run: npm install
 
       - name: Run lint checks
         if: steps.changes.outputs.changed == 'true'
@@ -171,7 +171,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ${{ matrix.extension }}
-        run: npm ci || npm install
+        run: npm install
 
       - name: Create package
         working-directory: ${{ matrix.extension }}
