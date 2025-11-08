@@ -1,24 +1,42 @@
-# Chrome Extensions Collection
+# Browser Extensions Collection
 
-This repository hosts multiple Chrome extensions created by **r00tmebaby**. Each extension lives in its own folder with its own tests, build scripts, and documentation. The monorepo structure allows shared CI/CD while maintaining independent development.
+[![Browser Extensions CI/CD](https://github.com/r00tmebaby/Browser-Extensions/actions/workflows/ci.yml/badge.svg)](https://github.com/r00tmebaby/Browser-Extensions/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org)
+
+This repository hosts multiple browser extensions created by **r00tmebaby**. Each extension lives in its own folder with its own tests, build scripts, and documentation. The monorepo structure allows shared CI/CD with **auto-discovery** while maintaining independent development.
+
+**🎯 Auto-Discovery**: The CI/CD automatically finds and tests ALL extensions in the repo - no configuration needed when adding new extensions!
 
 ## Current Extensions
 
 ### 🎵 Audio Normalizer & EQ (`Normaliser/`)
+
+![Chrome](https://img.shields.io/badge/Chrome-✓-brightgreen?logo=googlechrome&logoColor=white)
+![Edge](https://img.shields.io/badge/Edge-✓-brightgreen?logo=microsoftedge&logoColor=white)
+![Brave](https://img.shields.io/badge/Brave-✓-brightgreen?logo=brave&logoColor=white)
+
 Real-time audio normalizer with 10-band parametric equalizer, volume boost, and visual spectrum analyzer. Features:
 - Vertical EQ sliders (Winamp-style UI)
 - 7 presets: Rock, Pop, Jazz, Classical, Bass, Vocal, Flat
 - Per-site settings with allowlist
 - Pre/Post audio meters with compression indicator
 - No host permissions (uses `activeTab` + `scripting` for privacy)
+- **Browser Support**: Chrome, Edge, Brave
 
 ### ♿ Universal Accessibility Enhancer (`Universal Accessibility Enhancer/`)
+
+![Chrome](https://img.shields.io/badge/Chrome-✓-brightgreen?logo=googlechrome&logoColor=white)
+![Firefox](https://img.shields.io/badge/Firefox-✓-brightgreen?logo=firefoxbrowser&logoColor=white)
+![Edge](https://img.shields.io/badge/Edge-✓-brightgreen?logo=microsoftedge&logoColor=white)
+![Brave](https://img.shields.io/badge/Brave-✓-brightgreen?logo=brave&logoColor=white)
+
 Makes websites accessible through customizable text, contrast, and layout adjustments. Features:
 - Font customization (including OpenDyslexic, Atkinson Hyperlegible)
 - Color filters for color blindness
 - Focus mode, reduce motion, high contrast
 - Per-site settings
-- Cross-browser support (Chrome, Firefox, Edge)
+- **Browser Support**: Chrome, Firefox, Edge, Brave
 
 ## Folder Structure
 

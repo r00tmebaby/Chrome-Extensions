@@ -32,6 +32,10 @@
     "Normaliser",
     "Universal Accessibility Enhancer"
   ],
+  "overrides": {
+    "glob": "^9.3.5",
+    "inflight": "npm:@zkochan/inflight@^1.0.0"
+  },
   "devDependencies": {},
   "engines": {
     "node": ">=18.0.0"
